@@ -1,0 +1,15 @@
+#main-toolbar #activity-button {
+  background-image: url(../activity/activity-icon.svg);
+}
+
+html, body, #viewport {
+  margin: 0; background: #ffffff;
+}
+
+.pjs-meta {
+  color: #fff;
+}
+
+canvas {
+  position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+}

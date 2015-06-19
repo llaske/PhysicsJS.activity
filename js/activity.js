@@ -6,14 +6,19 @@ define(function (require) {
 
         // Initialize the activity.
         activity.setup();
-
+		
 		// Mixed Shapes
-		//
+		var innerWidth = window.innerWidth;
+		var innerHeight = window.innerHeight;
+		if ( innerWidth === 0 ) {
+			innerWidth = parent.innerWidth;
+		}
+		var toolbarHeight = 55;
 		Physics({ timestep: 6 }, function (world) {
 
 			// bounds of the window
 			var viewWidth = window.innerWidth
-				,viewportBounds = Physics.aabb(0, 0, window.innerWidth, window.innerHeight)
+				,viewportBounds = Physics.aabb(0, toolbarHeight, innerWidth, innerHeight)
 				,edgeBounce
 				,renderer
 				;
@@ -45,9 +50,8 @@ define(function (require) {
 
 			// resize events
 			window.addEventListener('resize', function () {
-
 				// as of 0.7.0 the renderer will auto resize... so we just take the values from the renderer
-				viewportBounds = Physics.aabb(0, 0, renderer.width, renderer.height);
+				viewportBounds = Physics.aabb(0, toolbarHeight, renderer.width, renderer.height);
 				// update the boundaries
 				edgeBounce.setAABB(viewportBounds);
 
@@ -148,9 +152,9 @@ define(function (require) {
 			});
 			world.on({
 				'interact:poke': function( pos ){
-					world.wakeUpAll();
+					/*world.wakeUpAll();
 					attractor.position( pos );
-					world.add( attractor );
+					world.add( attractor );*/
 				}
 				,'interact:move': function( pos ){
 					attractor.position( pos );

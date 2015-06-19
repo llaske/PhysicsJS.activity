@@ -1,5 +1,10 @@
 #main-toolbar #activity-button {
   background-image: url(../activity/activity-icon.svg);
+  z-index: 3;
+}
+
+#main-toolbar #stop-button {
+  z-index: 3;
 }
 
 html, body, #viewport {
@@ -11,5 +16,10 @@ html, body, #viewport {
 }
 
 canvas {
-  position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1;
 }

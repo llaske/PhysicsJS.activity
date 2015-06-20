@@ -56,7 +56,18 @@ define(function (require) {
 				edgeBounce.setAABB(viewportBounds);
 
 			}, true);
-
+			
+			document.getElementById("box-button").addEventListener('click', function () {
+				dropInBody(1);
+			}, true);
+			document.getElementById("circle-button").addEventListener('click', function () {
+				dropInBody(0);
+			}, true);
+				
+			document.getElementById("triangle-button").addEventListener('click', function () {
+				dropInBody(2);
+			}, true);
+			
 			var colors = [
 				['0x268bd2', '0x0d394f']
 				,['0xc93b3b', '0x561414']
@@ -70,21 +81,21 @@ define(function (require) {
 				return (Math.random() * (max-min) + min)|0;
 			}
 
-			function dropInBody(){
+			function dropInBody(type){
 
 				var body;
 				var c;
 
-				switch ( random( 0, 3 ) ){
+				switch (type){
 
 						// add a circle
 					case 0:
-						c = colors[0];
+						c = colors[random(0, colors.length-1)];
 						body = Physics.body('circle', {
 							x: viewWidth / 2
 							,y: 50
 							,vx: random(-5, 5)/100
-							,radius: 40
+							,radius: 40+random(0, 70)
 							,restitution: 0.9
 							,styles: {
 								fillStyle: c[0]
@@ -97,10 +108,11 @@ define(function (require) {
 
 						// add a square
 					case 1:
-						c = colors[1];
+						c = colors[random(0, colors.length-1)];
+						var l = random(0, 70);
 						body = Physics.body('rectangle', {
-							width: 50
-							,height: 50
+							width: 50+l
+							,height: 50+l
 							,x: viewWidth / 2
 							,y: 50
 							,vx: random(-5, 5)/100
@@ -114,12 +126,14 @@ define(function (require) {
 						});
 						break;
 
+						
 						// add a polygon
 					case 2:
-						var s = random( 5, 10 );
-						c = colors[ Math.min(s - 3, colors.length-1) ];
+					case 3:
+						var s = (type == 2 ? 3 : random( 5, 10 ));
+						c = colors[ random(0, colors.length-1) ];
 						body = Physics.body('convex-polygon', {
-							vertices: Physics.geometry.regularPolygonVertices( s, random(30, 50) )
+							vertices: Physics.geometry.regularPolygonVertices( s, random(30, 100) )
 							,x: viewWidth / 2
 							,y: 50
 							,vx: random(-5, 5)/100
@@ -138,13 +152,6 @@ define(function (require) {
 				world.add( body );
 			}
 
-			var int = setInterval(function(){
-				if ( world._bodies.length > 40 ){
-					clearInterval( int );
-				}
-				dropInBody();
-			}, 700);
-
 			// add some fun interaction
 			var attractor = Physics.behavior('attractor', {
 				order: 0,
@@ -152,9 +159,6 @@ define(function (require) {
 			});
 			world.on({
 				'interact:poke': function( pos ){
-					/*world.wakeUpAll();
-					attractor.position( pos );
-					world.add( attractor );*/
 				}
 				,'interact:move': function( pos ){
 					attractor.position( pos );

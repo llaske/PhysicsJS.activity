@@ -3,6 +3,21 @@
   z-index: 3;
 }
 
+#main-toolbar #box-button {
+  background-image: url(../icons/box.svg);
+  z-index: 3;
+}
+
+#main-toolbar #circle-button {
+  background-image: url(../icons/circle.svg);
+  z-index: 3;
+}
+
+#main-toolbar #triangle-button {
+  background-image: url(../icons/triangle.svg);
+  z-index: 3;
+}
+
 #main-toolbar #stop-button {
   z-index: 3;
 }

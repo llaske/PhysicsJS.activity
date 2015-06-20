@@ -57,6 +57,7 @@ define(function (require) {
 
 			}, true);
 			
+			// handle toolbar buttons
 			document.getElementById("box-button").addEventListener('click', function () {
 				dropInBody(1);
 			}, true);
@@ -66,6 +67,10 @@ define(function (require) {
 				
 			document.getElementById("triangle-button").addEventListener('click', function () {
 				dropInBody(2);
+			}, true);
+				
+			document.getElementById("clearall-button").addEventListener('click', function () {
+				world.remove(world.getBodies());
 			}, true);
 			
 			var colors = [

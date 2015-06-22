@@ -68,7 +68,22 @@ define(function (require) {
 			document.getElementById("triangle-button").addEventListener('click', function () {
 				dropInBody(2);
 			}, true);
-				
+			
+			// Save/Load world
+			loadWorld();
+			var stopButton = document.getElementById("stop-button");
+			stopButton.addEventListener('click', function (event) {
+				console.log("writing...");
+				saveWorld(function (error) {
+					if (error === null) {
+						console.log("write done.");
+					}
+					else {
+						console.log("write failed.");
+					}
+				});
+			});			
+			
 			document.getElementById("clearall-button").addEventListener('click', function () {
 				world.remove(world.getBodies());
 			}, true);
@@ -155,6 +170,69 @@ define(function (require) {
 				}
 
 				world.add( body );
+			}
+			
+			// Save world to datastore
+			function saveWorld(callback) {
+				// Build bodies list
+				var bodies = world.getBodies();
+				var objects = [];
+				for(var i = 0 ; i < bodies.length ; i++) {
+					var body = bodies[i];
+					var object = {};
+					object.type = body.geometry.name;
+					if (object.type == "circle") {
+						object.radius = body.radius;
+					} else if (body.geometry.name == "rectangle") {
+						object.width = body.view.width;
+						object.height = body.view.height;
+					} else if (body.geometry.name == "convex-polygon") {
+						object.vertices = body.vertices;
+					}
+					object.restitution = body.restitution;
+					object.styles = body.styles;
+					object.x = body.view.x;
+					object.y = body.view.y;
+					objects.push(object);
+				}
+				
+				// Save to datastore
+				var datastoreObject = activity.getDatastoreObject();
+				var jsonData = JSON.stringify({world: objects});
+				datastoreObject.setDataAsText(jsonData);
+				datastoreObject.save(callback);
+			}
+			
+			// Load world from datastore
+			function loadWorld(objects) {
+				var datastoreObject = activity.getDatastoreObject();
+				datastoreObject.loadAsText(function (error, metadata, data) {
+					var data = JSON.parse(data);
+					if (data == null)
+						return;
+						
+					// Create bodies
+					var objects = data.world;
+					for(var i = 0 ; i < objects.length ; i++) {
+						var savedObject = objects[i];
+						var newOptions = {
+							x: savedObject.x,
+							y: savedObject.y,
+							restitution: savedObject.restitution,
+							styles: savedObject.styles
+						};
+						if (savedObject.type == "circle") {
+							newOptions.radius = savedObject.radius;
+						} else if (savedObject.type == "rectangle") {
+							newOptions.width = savedObject.width;		
+							newOptions.height = savedObject.height;			
+						} else if (savedObject.type = "convex-polygon") {
+							newOptions.vertices = savedObject.vertices;
+						}
+						var newBody = Physics.body(savedObject.type, newOptions);
+						world.add(newBody);
+					}
+				});
 			}
 
 			// add some fun interaction

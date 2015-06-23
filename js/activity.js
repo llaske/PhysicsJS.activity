@@ -14,11 +14,12 @@ define(function (require) {
 			innerWidth = parent.innerWidth;
 		}
 		var toolbarHeight = 55;
+		var outerWidth = 300;
 		Physics({ timestep: 6 }, function (world) {
 
 			// bounds of the window
 			var viewWidth = window.innerWidth
-				,viewportBounds = Physics.aabb(0, toolbarHeight, innerWidth, innerHeight)
+				,viewportBounds = Physics.aabb(0-outerWidth, toolbarHeight, innerWidth+outerWidth, innerHeight)
 				,edgeBounce
 				,renderer
 				;
@@ -51,7 +52,7 @@ define(function (require) {
 			// resize events
 			window.addEventListener('resize', function () {
 				// as of 0.7.0 the renderer will auto resize... so we just take the values from the renderer
-				viewportBounds = Physics.aabb(0, toolbarHeight, renderer.width, renderer.height);
+				viewportBounds = Physics.aabb(0-outerWidth, toolbarHeight, renderer.width+outerWidth, renderer.height);
 				// update the boundaries
 				edgeBounce.setAABB(viewportBounds);
 

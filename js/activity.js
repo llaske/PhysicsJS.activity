@@ -4,15 +4,13 @@ define(function (require) {
     // Manipulate the DOM only when it is ready.
     require(['domReady!'], function (doc) {
 
-        // Initialize the activity.
+        // Initialize the activity
         activity.setup();
 		
-		// Mixed Shapes
-		var innerWidth = window.innerWidth;
-		var innerHeight = window.innerHeight;
-		if ( innerWidth === 0 ) {
-			innerWidth = parent.innerWidth;
-		}
+		// Initialize the world
+		var body = document.getElementById("body");
+		var innerWidth = body.offsetWidth;
+		var innerHeight = body.offsetHeight;
 		var toolbarHeight = 55;
 		var outerWidth = 300;
 		Physics({ timestep: 6 }, function (world) {

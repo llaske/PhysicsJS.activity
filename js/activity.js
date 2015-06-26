@@ -262,7 +262,17 @@ define(function (require) {
 
 			// subscribe to ticker to advance the simulation
 			Physics.util.ticker.on(function( time ) {
+				// next step
 				world.step( time );
+				
+				// remove bodies out of 
+				var bodies = world.getBodies();
+				var limit = outerWidth / 2;
+				for(var i = 0 ; i < bodies.length ; i++) {
+					var body = bodies[i];
+					if (body.state.pos.x < 0-limit || body.state.pos.x > innerWidth+limit)
+						world.remove(body);
+				}
 			});
 		});
     });

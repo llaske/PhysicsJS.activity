@@ -111,7 +111,7 @@ define(function (require) {
 					case 0:
 						c = colors[random(0, colors.length-1)];
 						body = Physics.body('circle', {
-							x: viewWidth / 2
+							x: innerWidth / 2
 							,y: 50
 							,vx: random(-5, 5)/100
 							,radius: 40+random(0, 70)
@@ -132,7 +132,7 @@ define(function (require) {
 						body = Physics.body('rectangle', {
 							width: 50+l
 							,height: 50+l
-							,x: viewWidth / 2
+							,x: innerWidth / 2
 							,y: 50
 							,vx: random(-5, 5)/100
 							,restitution: 0.9
@@ -153,7 +153,7 @@ define(function (require) {
 						c = colors[ random(0, colors.length-1) ];
 						body = Physics.body('convex-polygon', {
 							vertices: Physics.geometry.regularPolygonVertices( s, random(30, 100) )
-							,x: viewWidth / 2
+							,x: innerWidth / 2
 							,y: 50
 							,vx: random(-5, 5)/100
 							,angle: random( 0, 2 * Math.PI )

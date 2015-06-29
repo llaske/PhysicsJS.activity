@@ -13,10 +13,11 @@ define(function (require) {
 		var innerHeight = body.offsetHeight;
 		var toolbarHeight = 55;
 		var outerWidth = 300;
+		var init = false;
 		Physics({ timestep: 6 }, function (world) {
 
 			// bounds of the window
-			var viewWidth = window.innerWidth
+			var viewWidth = innerWidth
 				,viewportBounds = Physics.aabb(0-outerWidth, toolbarHeight, innerWidth+outerWidth, innerHeight)
 				,edgeBounce
 				,renderer
@@ -35,6 +36,10 @@ define(function (require) {
 				// render on each step
 				world.on('step', function () {
 					world.render();
+					if (!init) {
+						init = true;
+						zoom();
+					}
 				});
 				// add the interaction
 				world.add(Physics.behavior('interactive', { el: renderer.container }));
@@ -53,6 +58,9 @@ define(function (require) {
 				viewportBounds = Physics.aabb(0-outerWidth, toolbarHeight, renderer.width+outerWidth, renderer.height);
 				// update the boundaries
 				edgeBounce.setAABB(viewportBounds);
+				innerWidth = body.offsetWidth;
+				innerHeight = body.offsetHeight;
+				zoom();
 
 			}, true);
 			
@@ -68,6 +76,10 @@ define(function (require) {
 				dropInBody(2);
 			}, true);
 			
+			document.getElementById("clearall-button").addEventListener('click', function () {
+				world.remove(world.getBodies());
+			}, true);
+			
 			// Save/Load world
 			loadWorld();
 			var stopButton = document.getElementById("stop-button");
@@ -81,12 +93,8 @@ define(function (require) {
 						console.log("write failed.");
 					}
 				});
-			});			
-			
-			document.getElementById("clearall-button").addEventListener('click', function () {
-				world.remove(world.getBodies());
-			}, true);
-			
+			});
+
 			var colors = [
 				['0x268bd2', '0x0d394f']
 				,['0xc93b3b', '0x561414']
@@ -96,6 +104,20 @@ define(function (require) {
 				,['0xcac34c', '0x736a2c']
 			];
 
+			function zoom() {
+				if (window.devicePixelRatio == 1) {
+					return;
+				}
+				var canvas = document.getElementById("viewport").children[0];	
+				var zoom = 1.0 / window.devicePixelRatio;
+				canvas.style.zoom = zoom;
+				var useragent = navigator.userAgent.toLowerCase();
+				if (useragent.indexOf('chrome') == -1) {
+					canvas.style.MozTransform = "scale("+zoom+")";
+					canvas.style.MozTransformOrigin = "0 0";
+				}
+			}
+			
 			function random( min, max ){
 				return (Math.random() * (max-min) + min)|0;
 			}

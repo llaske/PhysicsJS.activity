@@ -12,8 +12,9 @@ define(function (require) {
 		var innerWidth = body.offsetWidth;
 		var innerHeight = body.offsetHeight;
 		var toolbarHeight = 55;
-		var outerWidth = 300;
+		var outerWidth = 0; // Use to determine if items could disappear, could be 300;
 		var init = false;
+		var gravityMode = 0;
 		Physics({ timestep: 6 }, function (world) {
 
 			// bounds of the window
@@ -74,6 +75,27 @@ define(function (require) {
 				
 			document.getElementById("triangle-button").addEventListener('click', function () {
 				dropInBody(2);
+			}, true);
+			
+			document.getElementById("gravity-button").addEventListener('click', function () {
+				gravityMode = (gravityMode + 1)%4;
+				document.getElementById("gravity-button").style.backgroundImage = "url(icons/gravity"+gravityMode+".svg)";
+				var acc = {};
+				switch(gravityMode) {
+				case 0:
+					acc = { x: 0, y: 0.0004 };
+					break;
+				case 1:
+					acc = { x: 0.0004, y: 0 };				
+					break;
+				case 2:
+					acc = { x: 0, y: -0.0004 };				
+					break;
+				case 3:
+					acc = { x: -0.0004, y: 0 };				
+					break;
+				}
+				gravity.setAcceleration(acc);
 			}, true);
 			
 			document.getElementById("clearall-button").addEventListener('click', function () {
@@ -274,8 +296,9 @@ define(function (require) {
 			});
 
 			// add things to the world
+			var gravity = Physics.behavior('constant-acceleration');
 			world.add([
-				Physics.behavior('constant-acceleration')
+				gravity
 				,Physics.behavior('body-impulse-response')
 				,Physics.behavior('body-collision-detection')
 				,Physics.behavior('sweep-prune')
@@ -290,10 +313,12 @@ define(function (require) {
 				// remove bodies out of 
 				var bodies = world.getBodies();
 				var limit = outerWidth / 2;
-				for(var i = 0 ; i < bodies.length ; i++) {
-					var body = bodies[i];
-					if (body.state.pos.x < 0-limit || body.state.pos.x > innerWidth+limit)
-						world.remove(body);
+				if (limit > 0) {
+					for(var i = 0 ; i < bodies.length ; i++) {
+						var body = bodies[i];
+						if (body.state.pos.x < 0-limit || body.state.pos.x > innerWidth+limit)
+							world.remove(body);
+					}
 				}
 			});
 		});

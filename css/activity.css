@@ -18,6 +18,11 @@
   z-index: 3;
 }
 
+#main-toolbar #gravity-button {
+  background-image: url(../icons/gravity0.svg);
+  z-index: 3;
+}
+
 #main-toolbar #clearall-button {
   background-image: url(../icons/clear_all.svg);
   z-index: 3;

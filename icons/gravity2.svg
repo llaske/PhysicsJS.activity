@@ -22,7 +22,7 @@
    sodipodi:docname="gravity1.svg"><metadata
    id="metadata11"><rdf:RDF><cc:Work
        rdf:about=""><dc:format>image/svg+xml</dc:format><dc:type
-         rdf:resource="http://purl.org/dc/dcmitype/StillImage" /><dc:title></dc:title></cc:Work></rdf:RDF></metadata><defs
+         rdf:resource="http://purl.org/dc/dcmitype/StillImage" /><dc:title /></cc:Work></rdf:RDF></metadata><defs
    id="defs9" /><sodipodi:namedview
    pagecolor="#ffffff"
    bordercolor="#666666"
@@ -54,7 +54,7 @@
 
 <g
    id="g3770"
-   transform="matrix(-1,0,0,-1,55.233052,53.834747)"><rect
+   transform="matrix(0,-1,1,0,-0.34957678,55.116526)"><rect
      y="41.716103"
      x="13.75"
      height="0.23305085"

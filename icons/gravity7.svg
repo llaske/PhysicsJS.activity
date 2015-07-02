@@ -19,7 +19,7 @@
    xml:space="preserve"
    id="svg2"
    inkscape:version="0.48.4 r9939"
-   sodipodi:docname="gravity3.svg"><metadata
+   sodipodi:docname="gravity7.svg"><metadata
    id="metadata11"><rdf:RDF><cc:Work
        rdf:about=""><dc:format>image/svg+xml</dc:format><dc:type
          rdf:resource="http://purl.org/dc/dcmitype/StillImage" /></cc:Work></rdf:RDF></metadata><defs
@@ -54,7 +54,7 @@
 
 <g
    id="g2991"
-   transform="matrix(-0.70710678,-0.70710678,0.70710678,-0.70710678,22.528977,70.562782)"><rect
+   transform="matrix(0.70710678,0.70710678,-0.70710678,0.70710678,32.089745,-16.313632)"><rect
      y="41.716103"
      x="13.75"
      height="0.23305085"

@@ -78,7 +78,7 @@ define(function (require) {
 			}, true);
 			
 			document.getElementById("gravity-button").addEventListener('click', function () {
-				gravityMode = (gravityMode + 1)%4;
+				gravityMode = (gravityMode + 1)%8;
 				document.getElementById("gravity-button").style.backgroundImage = "url(icons/gravity"+gravityMode+".svg)";
 				var acc = {};
 				switch(gravityMode) {
@@ -86,13 +86,25 @@ define(function (require) {
 					acc = { x: 0, y: 0.0004 };
 					break;
 				case 1:
-					acc = { x: 0.0004, y: 0 };				
+					acc = { x: 0.0004, y: 0.0004 };
 					break;
 				case 2:
-					acc = { x: 0, y: -0.0004 };				
+					acc = { x: 0.0004, y: 0 };
 					break;
 				case 3:
+					acc = { x: 0.0004, y: -0.0004 };
+					break;
+				case 4:			
+					acc = { x: 0, y: -0.0004 };				
+					break;
+				case 5:			
+					acc = { x: -0.0004, y: -0.0004 };				
+					break;
+				case 6:			
 					acc = { x: -0.0004, y: 0 };				
+					break;
+				case 7:			
+					acc = { x: -0.0004, y: 0.0004 };				
 					break;
 				}
 				gravity.setAcceleration(acc);

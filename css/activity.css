@@ -23,6 +23,11 @@
   z-index: 3;
 }
 
+#main-toolbar #sensor-button {
+  background-image: url(../icons/sensor.svg);
+  z-index: 3;
+}
+
 #main-toolbar #clearall-button {
   background-image: url(../icons/clear_all.svg);
   z-index: 3;

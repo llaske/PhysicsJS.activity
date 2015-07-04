@@ -7,6 +7,21 @@ define(function (require) {
         // Initialize the activity
         activity.setup();
 		
+		// Initialize cordova
+		var useragent = navigator.userAgent.toLowerCase();
+		var sensorButton = document.getElementById("sensor-button");
+		var readyToWatch = false;
+		var sensorMode = true;
+		if (useragent.indexOf('android') != -1 || useragent.indexOf('iphone') != -1 || useragent.indexOf('ipad') != -1 || useragent.indexOf('ipod') != -1 || useragent.indexOf('mozilla/5.0 (mobile') != -1) {
+			document.addEventListener('deviceready', function() {
+				readyToWatch = true;
+			}, false);
+			sensorButton.disabled = false;
+			sensorButton.classList.add('active');
+		} else {
+			sensorButton.disabled = true;
+		}
+			
 		// Initialize the world
 		var body = document.getElementById("body");
 		var innerWidth = body.offsetWidth;
@@ -40,6 +55,10 @@ define(function (require) {
 					if (!init) {
 						init = true;
 						zoom();
+					}
+					if (readyToWatch) {
+						watchId = navigator.accelerometer.watchAcceleration(accelerationChanged, null, { frequency: 500 });
+						readyToWatch = false;
 					}
 				});
 				// add the interaction
@@ -78,38 +97,41 @@ define(function (require) {
 			}, true);
 			
 			document.getElementById("gravity-button").addEventListener('click', function () {
-				gravityMode = (gravityMode + 1)%8;
-				document.getElementById("gravity-button").style.backgroundImage = "url(icons/gravity"+gravityMode+".svg)";
-				var acc = {};
-				switch(gravityMode) {
-				case 0:
-					acc = { x: 0, y: 0.0004 };
-					break;
-				case 1:
-					acc = { x: 0.0004, y: 0.0004 };
-					break;
-				case 2:
-					acc = { x: 0.0004, y: 0 };
-					break;
-				case 3:
-					acc = { x: 0.0004, y: -0.0004 };
-					break;
-				case 4:			
-					acc = { x: 0, y: -0.0004 };				
-					break;
-				case 5:			
-					acc = { x: -0.0004, y: -0.0004 };				
-					break;
-				case 6:			
-					acc = { x: -0.0004, y: 0 };				
-					break;
-				case 7:			
-					acc = { x: -0.0004, y: 0.0004 };				
-					break;
-				}
-				gravity.setAcceleration(acc);
+				setGravity((gravityMode + 1)%8);
 			}, true);
 			
+			sensorButton.addEventListener('click', function () {
+				sensorMode = !sensorMode;
+				if (sensorMode)
+					sensorButton.classList.add('active');
+				else
+					sensorButton.classList.remove('active');
+			}, true);
+			
+			function accelerationChanged(acceleration) {
+				if (!sensorMode) return;
+				if (acceleration.x < -4.5) {
+					if (acceleration.y > 4.75)
+						setGravity(3);
+					else if (acceleration.y < -4.75)
+						setGravity(5);
+					else
+						setGravity(4);				
+				} else if (acceleration.x <= 4.5 && acceleration.x >= -4.5) {
+					if (acceleration.y > 4.75)
+						setGravity(2);
+					else if (acceleration.y < -4.75)
+						setGravity(6);				
+				} else if (acceleration.x > 4.5) {
+					if (acceleration.y > 4.75)
+						setGravity(1);
+					else if (acceleration.y < -4.75)
+						setGravity(7);
+					else
+						setGravity(0);
+				}
+			}
+
 			document.getElementById("clearall-button").addEventListener('click', function () {
 				world.remove(world.getBodies());
 			}, true);
@@ -289,7 +311,43 @@ define(function (require) {
 					}
 				});
 			}
-
+			
+			// Change gravity value
+			function setGravity(value) {
+				if (gravityMode == value) return;
+				document.getElementById("gravity-button").style.backgroundImage = "url(icons/gravity"+value+".svg)";
+				var acc = {};
+				switch(value) {
+				case 0:
+					acc = { x: 0, y: 0.0004 };
+					break;
+				case 1:
+					acc = { x: 0.0004, y: 0.0004 };
+					break;
+				case 2:
+					acc = { x: 0.0004, y: 0 };
+					break;
+				case 3:
+					acc = { x: 0.0004, y: -0.0004 };
+					break;
+				case 4:			
+					acc = { x: 0, y: -0.0004 };				
+					break;
+				case 5:			
+					acc = { x: -0.0004, y: -0.0004 };				
+					break;
+				case 6:			
+					acc = { x: -0.0004, y: 0 };				
+					break;
+				case 7:			
+					acc = { x: -0.0004, y: 0.0004 };				
+					break;
+				}
+				gravity.setAcceleration(acc);
+				world.wakeUpAll();				
+				gravityMode = value;
+			}
+			
 			// add some fun interaction
 			var attractor = Physics.behavior('attractor', {
 				order: 0,

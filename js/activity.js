@@ -30,6 +30,7 @@ define(function (require) {
 		var outerWidth = 0; // Use to determine if items could disappear, could be 300;
 		var init = false;
 		var gravityMode = 0;
+		var currentType = 0;
 		Physics({ timestep: 6 }, function (world) {
 
 			// bounds of the window
@@ -85,15 +86,18 @@ define(function (require) {
 			}, true);
 			
 			// handle toolbar buttons
-			document.getElementById("box-button").addEventListener('click', function () {
-				dropInBody(1);
+			document.getElementById("box-button").addEventListener('click', function (e) {
+				currentType = 1;
+				switchToType(currentType);
 			}, true);
-			document.getElementById("circle-button").addEventListener('click', function () {
-				dropInBody(0);
+			document.getElementById("circle-button").addEventListener('click', function (e) {
+				currentType = 0;
+				switchToType(currentType);				
 			}, true);
 				
-			document.getElementById("triangle-button").addEventListener('click', function () {
-				dropInBody(2);
+			document.getElementById("triangle-button").addEventListener('click', function (e) {
+				currentType = 2;
+				switchToType(currentType);				
 			}, true);
 			
 			document.getElementById("gravity-button").addEventListener('click', function () {
@@ -178,7 +182,16 @@ define(function (require) {
 				return (Math.random() * (max-min) + min)|0;
 			}
 
-			function dropInBody(type){
+			function switchToType(newtype) {
+				document.getElementById("box-button").classList.remove('active');			
+				document.getElementById("circle-button").classList.remove('active');			
+				document.getElementById("triangle-button").classList.remove('active');
+				if (newtype == 0) document.getElementById("circle-button").classList.add('active');
+				else if (newtype == 1) document.getElementById("box-button").classList.add('active');
+				else if (newtype == 2) document.getElementById("triangle-button").classList.add('active');
+			}
+			
+			function dropInBody(type, pos){
 
 				var body;
 				var c;
@@ -189,8 +202,8 @@ define(function (require) {
 					case 0:
 						c = colors[random(0, colors.length-1)];
 						body = Physics.body('circle', {
-							x: innerWidth / 2
-							,y: 50
+							x: pos.x
+							,y: pos.y
 							,vx: random(-5, 5)/100
 							,radius: 40+random(0, 70)
 							,restitution: 0.9
@@ -210,8 +223,8 @@ define(function (require) {
 						body = Physics.body('rectangle', {
 							width: 50+l
 							,height: 50+l
-							,x: innerWidth / 2
-							,y: 50
+							,x: pos.x
+							,y: pos.y
 							,vx: random(-5, 5)/100
 							,restitution: 0.9
 							,styles: {
@@ -231,8 +244,8 @@ define(function (require) {
 						c = colors[ random(0, colors.length-1) ];
 						body = Physics.body('convex-polygon', {
 							vertices: Physics.geometry.regularPolygonVertices( s, random(30, 100) )
-							,x: innerWidth / 2
-							,y: 50
+							,x: pos.x
+							,y: pos.y
 							,vx: random(-5, 5)/100
 							,angle: random( 0, 2 * Math.PI )
 							,restitution: 0.9
@@ -355,6 +368,8 @@ define(function (require) {
 			});
 			world.on({
 				'interact:poke': function( pos ){
+					if (pos.y > toolbarHeight)
+						dropInBody(currentType, pos);
 				}
 				,'interact:move': function( pos ){
 					attractor.position( pos );

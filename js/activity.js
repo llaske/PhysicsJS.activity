@@ -205,7 +205,7 @@ define(function (require) {
 							x: pos.x
 							,y: pos.y
 							,vx: random(-5, 5)/100
-							,radius: 40+random(0, 70)
+							,radius: 40
 							,restitution: 0.9
 							,styles: {
 								fillStyle: c[0]
@@ -243,7 +243,7 @@ define(function (require) {
 						var s = (type == 2 ? 3 : random( 5, 10 ));
 						c = colors[ random(0, colors.length-1) ];
 						body = Physics.body('convex-polygon', {
-							vertices: Physics.geometry.regularPolygonVertices( s, random(30, 100) )
+							vertices: Physics.geometry.regularPolygonVertices( s, 30 )
 							,x: pos.x
 							,y: pos.y
 							,vx: random(-5, 5)/100
@@ -259,7 +259,10 @@ define(function (require) {
 						break;
 				}
 
+				body.treatment = "static";
+				
 				world.add( body );
+				return body;
 			}
 			
 			// Save world to datastore
@@ -268,21 +271,7 @@ define(function (require) {
 				var bodies = world.getBodies();
 				var objects = [];
 				for(var i = 0 ; i < bodies.length ; i++) {
-					var body = bodies[i];
-					var object = {};
-					object.type = body.geometry.name;
-					if (object.type == "circle") {
-						object.radius = body.radius;
-					} else if (body.geometry.name == "rectangle") {
-						object.width = body.view.width;
-						object.height = body.view.height;
-					} else if (body.geometry.name == "convex-polygon") {
-						object.vertices = body.vertices;
-					}
-					object.restitution = body.restitution;
-					object.styles = body.styles;
-					object.x = body.view.x;
-					object.y = body.view.y;
+					var object = serializeObject(bodies[i]);
 					objects.push(object);
 				}
 				
@@ -291,6 +280,24 @@ define(function (require) {
 				var jsonData = JSON.stringify({world: objects});
 				datastoreObject.setDataAsText(jsonData);
 				datastoreObject.save(callback);
+			}
+			
+			function serializeObject(body) {
+				var object = {};
+				object.type = body.geometry.name;
+				if (object.type == "circle") {
+					object.radius = body.radius;
+				} else if (body.geometry.name == "rectangle") {
+					object.width = body.view.width;
+					object.height = body.view.height;
+				} else if (body.geometry.name == "convex-polygon") {
+					object.vertices = body.vertices;
+				}
+				object.restitution = body.restitution;
+				object.styles = body.styles;
+				object.x = body.view.x;			
+				object.y = body.view.y;
+				return object;
 			}
 			
 			// Load world from datastore
@@ -304,25 +311,28 @@ define(function (require) {
 					// Create bodies
 					var objects = data.world;
 					for(var i = 0 ; i < objects.length ; i++) {
-						var savedObject = objects[i];
-						var newOptions = {
-							x: savedObject.x,
-							y: savedObject.y,
-							restitution: savedObject.restitution,
-							styles: savedObject.styles
-						};
-						if (savedObject.type == "circle") {
-							newOptions.radius = savedObject.radius;
-						} else if (savedObject.type == "rectangle") {
-							newOptions.width = savedObject.width;		
-							newOptions.height = savedObject.height;			
-						} else if (savedObject.type = "convex-polygon") {
-							newOptions.vertices = savedObject.vertices;
-						}
-						var newBody = Physics.body(savedObject.type, newOptions);
+						var newBody = deserializeObject(objects[i]);
 						world.add(newBody);
 					}
 				});
+			}
+			
+			function deserializeObject(savedObject) {
+				var newOptions = {
+					x: savedObject.x,
+					y: savedObject.y,
+					restitution: savedObject.restitution,
+					styles: savedObject.styles
+				};
+				if (savedObject.type == "circle") {
+					newOptions.radius = savedObject.radius;
+				} else if (savedObject.type == "rectangle") {
+					newOptions.width = savedObject.width;		
+					newOptions.height = savedObject.height;			
+				} else if (savedObject.type = "convex-polygon") {
+					newOptions.vertices = savedObject.vertices;
+				}
+				return Physics.body(savedObject.type, newOptions);
 			}
 			
 			// Change gravity value
@@ -362,19 +372,51 @@ define(function (require) {
 			}
 			
 			// add some fun interaction
+			var createdBody = null;
+			var createdStart = null;
 			var attractor = Physics.behavior('attractor', {
 				order: 0,
 				strength: 0.002
 			});
 			world.on({
 				'interact:poke': function( pos ){
-					if (pos.y > toolbarHeight)
-						dropInBody(currentType, pos);
+					// create body at a static place
+					if (pos.y > toolbarHeight) {
+						createdBody = dropInBody(currentType, pos);
+						createdStart = pos;
+					}
 				}
 				,'interact:move': function( pos ){
+					// update size of created body
+					if (createdBody != null) {
+						// compute new size
+						var distx = createdStart.x - pos.x;
+						var disty = createdStart.y - pos.y;
+						var distance = Math.min(Math.sqrt(Math.abs(distx*distx-disty*disty)),createdStart.y-toolbarHeight);
+						if (createdBody.view != null) {
+							// Recreate the object with new size
+							var object = serializeObject(createdBody);
+							if (object.type == "circle") {
+								object.radius = Math.max(40, distance);
+							} else if (object.type == "rectangle") {
+								object.width = object.height = Math.max(50, distance);
+							} else if (object.type = "convex-polygon") {
+								object.vertices = Physics.geometry.regularPolygonVertices( object.vertices.length, Math.max(30, distance));
+							}
+							world.removeBody(createdBody);
+							createdBody = deserializeObject(object);
+							createdBody.treatment = "static";
+							world.add(createdBody);
+						}
+					}
+
 					attractor.position( pos );
 				}
-				,'interact:release': function(){
+				,'interact:release': function( pos ){
+					if (createdBody != null) {
+						createdBody.treatment = "dynamic";
+						createdBody = null;
+					}
 					world.wakeUpAll();
 					world.remove( attractor );
 				}

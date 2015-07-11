@@ -324,6 +324,8 @@ define(function (require) {
 					restitution: savedObject.restitution,
 					styles: savedObject.styles
 				};
+				if (savedObject.angle)
+					newOptions.angle = savedObject.angle;
 				if (savedObject.type == "circle") {
 					newOptions.radius = savedObject.radius;
 				} else if (savedObject.type == "rectangle") {
@@ -404,6 +406,9 @@ define(function (require) {
 								object.vertices = Physics.geometry.regularPolygonVertices( object.vertices.length, Math.max(30, distance));
 							}
 							world.removeBody(createdBody);
+							var v1 = new Physics.vector(createdStart.x, 0);
+							var v2 = new Physics.vector(pos.x-createdStart.x, pos.y-createdStart.y);
+							object.angle = -v1.angle(v2);
 							createdBody = deserializeObject(object);
 							createdBody.treatment = "static";
 							world.add(createdBody);

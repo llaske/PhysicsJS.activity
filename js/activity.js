@@ -103,7 +103,12 @@ define(function (require) {
 			document.getElementById("gravity-button").addEventListener('click', function () {
 				setGravity((gravityMode + 1)%8);
 			}, true);
-			
+
+			document.getElementById("clear-button").addEventListener('click', function () {
+				currentType = -1;
+				switchToType(currentType);	
+			}, true);
+
 			sensorButton.addEventListener('click', function () {
 				sensorMode = !sensorMode;
 				if (sensorMode)
@@ -135,10 +140,6 @@ define(function (require) {
 						setGravity(0);
 				}
 			}
-
-			document.getElementById("clearall-button").addEventListener('click', function () {
-				world.remove(world.getBodies());
-			}, true);
 			
 			// Save/Load world
 			loadWorld();
@@ -186,9 +187,11 @@ define(function (require) {
 				document.getElementById("box-button").classList.remove('active');			
 				document.getElementById("circle-button").classList.remove('active');			
 				document.getElementById("triangle-button").classList.remove('active');
+				document.getElementById("clear-button").classList.remove('active');
 				if (newtype == 0) document.getElementById("circle-button").classList.add('active');
 				else if (newtype == 1) document.getElementById("box-button").classList.add('active');
 				else if (newtype == 2) document.getElementById("triangle-button").classList.add('active');
+				else if (newtype == -1) document.getElementById("clear-button").classList.add('active');
 			}
 			
 			function dropInBody(type, pos){
@@ -376,14 +379,10 @@ define(function (require) {
 			// add some fun interaction
 			var createdBody = null;
 			var createdStart = null;
-			var attractor = Physics.behavior('attractor', {
-				order: 0,
-				strength: 0.002
-			});
 			world.on({
 				'interact:poke': function( pos ){
 					// create body at a static place
-					if (pos.y > toolbarHeight) {
+					if (currentType != -1 && pos.y > toolbarHeight) {
 						createdBody = dropInBody(currentType, pos);
 						createdStart = pos;
 					}
@@ -414,8 +413,6 @@ define(function (require) {
 							world.add(createdBody);
 						}
 					}
-
-					attractor.position( pos );
 				}
 				,'interact:release': function( pos ){
 					if (createdBody != null) {
@@ -423,7 +420,11 @@ define(function (require) {
 						createdBody = null;
 					}
 					world.wakeUpAll();
-					world.remove( attractor );
+				}
+				,'interact:grab': function ( data ) {
+					if (currentType == -1) {
+						world.remove(data.body);
+					}				
 				}
 			});
 

@@ -99,6 +99,11 @@ define(function (require) {
 				currentType = 2;
 				switchToType(currentType);				
 			}, true);
+				
+			document.getElementById("polygon-button").addEventListener('click', function (e) {
+				currentType = 3;
+				switchToType(currentType);				
+			}, true);
 			
 			document.getElementById("gravity-button").addEventListener('click', function () {
 				setGravity((gravityMode + 1)%8);
@@ -186,11 +191,13 @@ define(function (require) {
 			function switchToType(newtype) {
 				document.getElementById("box-button").classList.remove('active');			
 				document.getElementById("circle-button").classList.remove('active');			
+				document.getElementById("polygon-button").classList.remove('active');
 				document.getElementById("triangle-button").classList.remove('active');
 				document.getElementById("clear-button").classList.remove('active');
 				if (newtype == 0) document.getElementById("circle-button").classList.add('active');
 				else if (newtype == 1) document.getElementById("box-button").classList.add('active');
 				else if (newtype == 2) document.getElementById("triangle-button").classList.add('active');
+				else if (newtype == 3) document.getElementById("polygon-button").classList.add('active');
 				else if (newtype == -1) document.getElementById("clear-button").classList.add('active');
 			}
 			

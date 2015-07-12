@@ -33,6 +33,11 @@
   z-index: 3;
 }
 
+#main-toolbar #polygon-button {
+  background-image: url(../icons/polygon.svg);
+  z-index: 3;
+}
+
 
 #main-toolbar #stop-button {
   z-index: 3;

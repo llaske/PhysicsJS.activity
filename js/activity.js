@@ -10,8 +10,11 @@ define(function (require) {
 		// Initialize cordova
 		var useragent = navigator.userAgent.toLowerCase();
 		var sensorButton = document.getElementById("sensor-button");
+		var gravityButton = document.getElementById("gravity-button");
+		var appleButton = document.getElementById("apple-button");
 		var readyToWatch = false;
 		var sensorMode = true;
+		var newtonMode = false;
 		if (useragent.indexOf('android') != -1 || useragent.indexOf('iphone') != -1 || useragent.indexOf('ipad') != -1 || useragent.indexOf('ipod') != -1 || useragent.indexOf('mozilla/5.0 (mobile') != -1) {
 			document.addEventListener('deviceready', function() {
 				readyToWatch = true;
@@ -105,7 +108,7 @@ define(function (require) {
 				switchToType(currentType);				
 			}, true);
 			
-			document.getElementById("gravity-button").addEventListener('click', function () {
+			gravityButton.addEventListener('click', function () {
 				setGravity((gravityMode + 1)%8);
 			}, true);
 
@@ -114,12 +117,28 @@ define(function (require) {
 				switchToType(currentType);	
 			}, true);
 
+			// Handle acceleration and gravity mode
 			sensorButton.addEventListener('click', function () {
 				sensorMode = !sensorMode;
 				if (sensorMode)
 					sensorButton.classList.add('active');
 				else
 					sensorButton.classList.remove('active');
+			}, true);
+			
+			appleButton.addEventListener('click', function () {
+				newtonMode = !newtonMode;
+				if (newtonMode) {
+					world.remove(gravity);
+					world.add(newton);
+					appleButton.classList.add('active');
+					gravityButton.disabled = true;
+				} else {
+					world.remove(newton);
+					world.add(gravity);				
+					appleButton.classList.remove('active');
+					gravityButton.disabled = false;
+				}
 			}, true);
 			
 			function accelerationChanged(acceleration) {
@@ -437,6 +456,7 @@ define(function (require) {
 
 			// add things to the world
 			var gravity = Physics.behavior('constant-acceleration');
+			var newton = Physics.behavior('newtonian', { strength: .5 });
 			world.add([
 				gravity
 				,Physics.behavior('body-impulse-response')

@@ -38,6 +38,10 @@
   z-index: 3;
 }
 
+#main-toolbar #apple-button {
+  background-image: url(../icons/apple.svg);
+  z-index: 3;
+}
 
 #main-toolbar #stop-button {
   z-index: 3;

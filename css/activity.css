@@ -63,3 +63,26 @@ canvas {
   bottom: 0;
   z-index: 1;
 }
+
+
+@media screen and (max-width: 657px) {
+	.toolbar {
+		padding-left: 10px;
+	}
+
+	#main-toolbar #polygon-button {
+		visibility: hidden;
+		position: absolute;
+		z-index: 0;
+	}
+
+	#main-toolbar #gravity-button {
+		visibility: hidden;
+		position: absolute;
+		z-index: 0;
+	}
+	
+	#main-toolbar #stop-button {
+		position: absolute;
+	}
+}

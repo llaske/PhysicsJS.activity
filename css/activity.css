@@ -28,11 +28,20 @@
   z-index: 3;
 }
 
-#main-toolbar #clearall-button {
-  background-image: url(../icons/clear_all.svg);
+#main-toolbar #clear-button {
+  background-image: url(../icons/clear.svg);
   z-index: 3;
 }
 
+#main-toolbar #polygon-button {
+  background-image: url(../icons/polygon.svg);
+  z-index: 3;
+}
+
+#main-toolbar #apple-button {
+  background-image: url(../icons/apple.svg);
+  z-index: 3;
+}
 
 #main-toolbar #stop-button {
   z-index: 3;
@@ -53,4 +62,27 @@ canvas {
   right: 0;
   bottom: 0;
   z-index: 1;
+}
+
+
+@media screen and (max-width: 657px) {
+	.toolbar {
+		padding-left: 10px;
+	}
+
+	#main-toolbar #polygon-button {
+		visibility: hidden;
+		position: absolute;
+		z-index: 0;
+	}
+
+	#main-toolbar #gravity-button {
+		visibility: hidden;
+		position: absolute;
+		z-index: 0;
+	}
+	
+	#main-toolbar #stop-button {
+		position: absolute;
+	}
 }
